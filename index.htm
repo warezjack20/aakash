@@ -1,0 +1,786 @@
+<html>
+<head>
+<title>Canvas Test</title>
+ 
+
+<script type="text/javascript">
+
+// globals
+var x = 0;
+var y = 0;
+var choice; 
+var msg_c = 0;
+var msg_r = 0;
+var msg_l = 0;
+var msg_d = 0;
+var msg_e = 0;
+var msg_br = 0;
+var msg_dl = 0;
+var msg_mv = 0;
+function init() {
+    var canvas = document.getElementById('canvas');
+    document.getElementById('bx_from').value = "";
+    document.getElementById('bx_to').value = "";
+    document.getElementById('by_from').value = "";
+    document.getElementById('by_to').value = "";
+    document.getElementById('bx_diff').value = "";
+    document.getElementById('by_diff').value = "";
+    document.getElementById('txt').value = "";
+    document.getElementById('by').value = "";
+    document.getElementById('bx').value = "";
+    choice = "Circle";
+ //   document.getElementById("xfig").style.height = 0;
+ // document.getElementById("xfig").style.display = "block";
+ //document.getElementById("xfig").style.display = "none";
+ 
+ 
+}
+function editable()
+{
+    	canvas.addEventListener("mousedown", drawLine, false);
+}
+function noneditable()
+{
+    	canvas.removeEventListener("mousedown", drawLine, false);
+}
+ var mv = 0;	
+ var l = 0;
+ var c = 0;
+ var c_x1, c_x2, c_y1, c_y2;
+ var r = 0;
+ var r_r, rx, ry;
+ var fill_select;
+ var bar = 0;
+/*
+ * Get mouse event coordinate converted to canvas coordinate
+ * c: The canvas object
+ * e: A mouse event
+ */
+function toCanvasX(c, e) 
+{
+  var posx = 0;
+ 
+  if (e.pageX)   {
+    posx = e.pageX;
+  } else if (e.clientX)   {
+    posx = e.clientX + document.body.scrollLeft
+      + document.documentElement.scrollLeft;
+  }
+  posx = posx - c.offsetLeft;
+  return posx;
+}
+ 
+function toCanvasY(c, e) {
+  var posy = 0;
+ 
+  if (e.pageY)   {http://www.google.com/
+    posy = e.pageY;
+  } else if (e.clientY)   {
+    posy = e.clientY + document.body.scrollTop
+      + document.documentElement.scrollTop;
+  }
+  posy = posy - c.offsetTop;
+ 
+  return posy;
+}
+function drawLine1(c)
+{
+	choice = document.getElementById(c).value;
+	if(choice == "Circle" && msg_c == 0)
+	{
+		msg_c = 1;
+		alert("Just click two times on the canvas \nFirst click will be left/right(depends) border of circle \nSecond click will be center");
+	}
+	else if(choice == "Rect" && msg_r == 0)
+	{
+		msg_r = 1;
+		alert("Just click two times on the canvas \nFirst click will be left-top corner of rectangle \nSecond click will be right-bottom corner of rectangle");
+	}
+	else if(choice == "Line" && msg_l == 0)
+	{
+		msg_l = 1;
+		alert("Just click two times on the canvas \nFirst click will be starting point of line \nSecond click will be ending point of line");
+	}
+	else if(choice == "Dot" && msg_d == 0)
+	{
+		msg_d = 1;
+		alert("Just click ones where to point dot");
+	}
+	else if(choice == "Erase" && msg_e == 0)
+	{
+		msg_e = 1;
+		alert("To activate eraser just click ones over the canvas and to deactivate use double-click of mouse");
+	}
+	else if(choice == "Delete" && msg_dl == 0)
+	{
+		msg_dl = 1;
+		alert("Your first click on the canvas will delete the last shape you drawn");
+	}
+	else if(choice == "Move" && msg_mv == 0)
+	{
+		msg_mv = 1;
+	//	canvas.addEventListener("mousedown", move_object, false);
+		//alert("move");
+	}
+	else if(choice == "Bar" && msg_br == 0)
+	{
+		msg_br = 1;
+		bar = 0;
+	//	canvas.addEventListener("mousedown", move_object, false);
+		//alert("move");
+	}
+	if(choice != "Erase")
+	{
+		canvas.removeEventListener("mousemove", erase, false);
+	}
+	
+	if(choice != "Brush")
+	{
+		canvas.removeEventListener("mousemove", brush, false);
+	}
+	if(choice != "Move")
+	{
+		canvas.removeEventListener("mousedown", move_object, false);
+	}
+	r = 0;
+}
+var en = new Array();
+var elem = 0;
+en[0] = 'n'; 
+var e_x = 0;
+var e_y = 0;
+var e_x1 = 0;
+var e_y1 = 0;
+var e_r = 0;
+var e_c = 'rgb(255, 255, 255)';
+var e_str = "";
+var e_sz = "";
+function drawLine(e) {
+//alert();
+	var f1 = document.getElementById("f1").checked;
+	var f2 = document.getElementById("f2").checked;
+ //alert(choice);
+  var ctx= this.getContext('2d');
+  //var r = document.getElementById(c);
+  var color = document.getElementById("sel").value;
+  if(choice == "Circle")
+  {
+  	
+  	ctx.strokeStyle = 'rgb(0,0,0)';
+  	r++;
+  	var posx = toCanvasX(this, e);
+  	var posy = toCanvasY(this, e);
+  	if(r == 1)
+  	{
+  		r_x1 = posx;
+  		r_y1 = posy;
+  	}
+  	if(r == 2)
+  	{
+  		ctx.beginPath();
+		if(posx >= r_x1)
+		{
+			rx = posx - r_x1;		
+		}
+		else
+		{
+			rx = r_x1 - posx;
+		}
+		if(posy >= r_y1)
+		{
+			ry = posy - r_y1;
+		}
+		else
+		{
+			ry = r_y1 - posy;
+		}
+		
+		if(ry >= rx)
+		{
+			r_r = ry;
+		}
+		else
+		{
+			r_r = rx;
+		}
+		
+		if(f1 == false)
+		{
+			ctx.strokeStyle = color;
+			ctx.arc(posx,posy,r_r,0,360,false);	
+		}
+		else
+		{
+			ctx.strokeStyle = color;
+			ctx.fillStyle = color;
+			ctx.arc(posx,posy,r_r,0,360,false);
+			ctx.fill();
+		}
+		r = 0;
+		elem++;
+		en[elem] = 'c';
+		e_x = posx;
+		e_y = posy;
+		ctx.stroke();
+		//e_r = r_r;
+  	}
+  	l  = 0;
+  	c = 0;
+  }
+  else if(choice == "Rect")
+  {
+  	
+  	c++;
+  	ctx.strokeStyle = 'rgb(0, 0, 0)';
+  	var posx = toCanvasX(this, e);
+  	var posy = toCanvasY(this, e);
+  	if(c == 1)
+  	{
+  		c_x1 = posx;
+  		c_y1 = posy;	
+  	}
+  	if(c == 2)
+  	{
+  		ctx.beginPath();
+		ctx.moveTo(x, y);
+		
+		c_x2 = posx - c_x1;
+		c_y2 = posy - c_y1;
+		if(f1 == false)
+		{
+			ctx.strokeStyle = color;
+			ctx.rect(c_x1, c_y1, c_x2, c_y2);	
+		}
+		else
+		{
+			ctx.strokeStyle = color;
+			ctx.fillStyle = color;
+			ctx.fillRect(c_x1, c_y1, c_x2, c_y2);
+		}
+		elem++;	
+		en[elem] = 'r';
+		c = 0;
+		e_x = c_x1;
+		e_y = c_y1;
+		e_x1 = c_x2;
+		e_y1 = c_y2;
+		e_r = r_r;
+		ctx.stroke();
+  	}
+  	l = 0; r = 0;
+  }
+  else if(choice == "Line")
+  {
+  	
+  	l++;
+  	ctx.strokeStyle = color;	
+  	var posx = toCanvasX(this, e);
+  	var posy = toCanvasY(this, e);
+  	if(l == 2)
+  	{
+  		ctx.beginPath();
+		ctx.moveTo(x, y);
+		ctx.lineTo(posx, posy);	
+		l = 0;
+		elem++;
+		en[elem] = 'l';
+		e_x = x;
+		e_y = y;
+		e_x1 = posx;
+		e_y1 = posy;
+		ctx.stroke();
+
+  	}
+  	r = 0; c = 0;
+  }
+  else if(choice == "Dot")
+  {
+  	
+  	ctx.strokeStyle = color;
+  	var posx = toCanvasX(this, e);
+  	var posy = toCanvasY(this, e);
+  	ctx.beginPath();
+  	ctx.arc(posx,posy,1,0,360,false);
+	elem++;
+	en[elem] = 'd';
+	ctx.stroke();
+  }
+  else if(choice == "Erase")
+  {
+  	l = 0;
+  	r = 0;
+  	c = 0; 
+  	canvas.addEventListener("mousemove", erase, false);
+  	canvas.addEventListener("dblclick", remove, false);
+  }
+  else if(choice == "Brush")
+  {
+  	
+  	canvas.addEventListener("mousemove", brush, false);
+  	canvas.addEventListener("dblclick", remove_brush, false);
+  }
+   else if(choice == "Clear")
+  {
+  	ctx.strokeStyle = "white";
+	ctx.fillStyle = "white";
+	ctx.fillRect(0,0, 900, 500);
+	ctx.stroke();
+  	l = 0;
+  	r = 0;
+  	c = 0; 
+  }
+  else if(choice == "Delete")
+  {
+  	//alert(en[elem]);
+  	r = 0;
+  	if(en[elem] == 'c')
+  	{
+  		if(f1 == false)
+  		{
+  			ctx.strokeStyle = "white";
+  			ctx.arc(e_x,e_y,e_r,0,360,false);
+  		}
+  		else				//use e_c to fill with white background 
+  		{
+  			ctx.strokeStyle = "white";
+  			ctx.fillStyle = "white";
+			ctx.arc(e_x,e_y,e_r + 1,0,360,false);
+			ctx.fill();
+  		}
+  		ctx.stroke();ctx.stroke();ctx.stroke();ctx.stroke();ctx.stroke();ctx.stroke();ctx.stroke();
+  		ctx.stroke();ctx.stroke();ctx.stroke();ctx.stroke();ctx.stroke();ctx.stroke();ctx.stroke();
+  	}
+  	else if(en[elem] == 'r')
+  	{	
+  		if(f1 == false)
+  		{
+  			ctx.strokeWidth = "1";
+  			ctx.strokeStyle = "white";
+			ctx.rect(c_x1, c_y1, c_x2, c_y2);
+  		}
+  		else
+  		{
+  			ctx.strokeStyle = "white";
+			ctx.fillStyle =  "white";
+			ctx.fillRect(e_x, e_y, e_x1, e_y1);
+  		}
+  		ctx.stroke();ctx.stroke();ctx.stroke();ctx.stroke();ctx.stroke();ctx.stroke();
+  		ctx.stroke();ctx.stroke();ctx.stroke();ctx.stroke();ctx.stroke();ctx.stroke();
+  		ctx.stroke();ctx.stroke();ctx.stroke();ctx.stroke();ctx.stroke();ctx.stroke();
+	}
+	else if(en[elem] == 'l')
+  	{	
+  		ctx.strokeStyle = "white";
+  		ctx.beginPath();
+  		
+		ctx.moveTo(e_x, e_y);
+		ctx.lineTo(e_x1, e_y1);	
+		ctx.moveTo(posx, posy);
+		ctx.stroke();ctx.stroke();ctx.stroke();
+		ctx.stroke();ctx.stroke();ctx.stroke();
+		ctx.stroke();ctx.stroke();ctx.stroke();
+		ctx.stroke();ctx.stroke();ctx.stroke();
+	}
+	else if(en[elem] == 't')
+  	{	
+  		ctx.strokeStyle = "white";
+  		ctx.beginPath();
+  		
+		ctx.moveTo(e_x, e_y);
+		//ctx.lineTo(e_x1, e_y1);	
+		//ctx.moveTo(posx, posy);
+		ctx.fillStyle = "white";
+		var fnt = "px Georgia";
+		e_sz = parseInt(sz) + 5;
+		ctx.font = toString(e_sz).concat(fnt);
+		ctx.fillText(e_str, e_x, e_y);
+		ctx.stroke();ctx.stroke();ctx.stroke();
+		ctx.stroke();ctx.stroke();ctx.stroke();
+		ctx.stroke();ctx.stroke();ctx.stroke();
+		ctx.stroke();ctx.stroke();ctx.stroke();
+	}
+  }
+  
+  else if(choice == "Text")
+  {
+  	l = 0;
+  	c = 0;
+  	r = 0;
+  	var sz = document.getElementById("ts").value;
+  	//alert(sz);
+  	ctx.strokeStyle = "white";
+  	ctx.fillStyle = color;
+  	var posx = toCanvasX(this, e);
+  	var posy = toCanvasY(this, e);
+  	//ctx.moveTo(posx, posy);
+  	var fnt = "px Georgia";
+  	ctx.font = sz.concat(fnt);
+	ctx.fillText(document.getElementById("txt").value, posx, posy);
+  	e_str = document.getElementById("txt").value;
+  	//ctx.beginPath();
+  	//ctx.arc(posx,posy,1,0,360,false);
+	e_sz = sz;
+	e_x = posx;
+	e_y = posy;
+	elem++;
+	en[elem] = 't';
+	ctx.stroke();
+  }
+  else if(choice == "Bar")
+  {
+  	
+  	var bx_from = parseInt(document.getElementById("bx_from").value);
+  	var bx_to = parseInt(document.getElementById("bx_to").value);
+  	var bx_diff = parseInt(document.getElementById("bx_diff").value);
+  	var by_from = parseInt(document.getElementById("by_from").value);
+  	var by_to = parseInt(document.getElementById("by_to").value);
+  	var by_diff = parseInt(document.getElementById("by_diff").value);
+  	//alert("hii");
+  	//ctx.strokeStyle = "white";
+  	//ctx.fillStyle = "black";
+ 	ctx.beginPath();
+	ctx.moveTo(200, 400);
+	ctx.lineTo(200, 80);
+	ctx.moveTo(200, 400);
+	ctx.lineTo(700, 400);	
+	ctx.fillText("y",720, 400);
+	ctx.fillText("x",197, 70);
+	var x_plot = 380;
+	var y_plot = 245;
+	var minus = 0;
+	if(bx_to > 100000)
+	{
+		minus = 10;
+	}
+	var count = 0;
+	while(bx_from <= bx_to && count < 10)
+	{
+		
+		ctx.fillText(bx_from, 170 - minus, x_plot);
+		if(by_from <= by_to)
+		{
+			ctx.fillText(by_from, y_plot, 420);
+			y_plot += 45;
+		}
+		 
+		x_plot -= 30;
+		by_from += by_diff;
+		bx_from += bx_diff;
+		count++;
+	}
+	//if(bar == 0)
+	//{
+	ctx.stroke();
+	//}
+	//bar = 1;	
+	canvas.removeEventListener("mousedown", drawLine, false);
+  }
+ 
+  x = posx;
+  y = posy;
+}
+
+function erase(e)
+{
+	var size = document.getElementById("er").value;
+	var ctx= this.getContext('2d');
+	var posx = toCanvasX(this, e);
+  	var posy = toCanvasY(this, e);
+  	ctx.beginPath();
+  	ctx.strokeStyle = 'rgb(255,255,255)';
+	ctx.fillStyle = 'rgb(255,255,255)';
+  	ctx.arc(posx,posy,size,0,360,false);
+  	ctx.fill();
+}
+function brush(e)
+{
+	var size = document.getElementById("br").value;
+	var color = document.getElementById("sel").value;
+//	alert(color);
+	var ctx= this.getContext('2d');
+	var posx = toCanvasX(this, e);
+  	var posy = toCanvasY(this, e);
+  	ctx.beginPath();
+  	ctx.strokeStyle = color;
+	ctx.fillStyle = color;
+  	ctx.arc(posx,posy,size,0,360,false);
+  	ctx.fill();
+}
+function remove(e)
+{
+	canvas.removeEventListener("mousemove", erase, false);
+}
+function remove_brush(e)
+{
+	canvas.removeEventListener("mousemove", brush, false);
+}
+function fil(c)
+{
+	fill_select = document.getElementById(c).value;
+	//alert(fill_select);
+}
+function plot()
+{
+	var canvas = document.getElementById("canvas");
+	var ctx = canvas.getContext('2d');
+	var color = document.getElementById("bar_color").value;
+	var bx = document.getElementById("bx").value;
+	var by = document.getElementById("by").value;
+	if(!bx || !by)
+	{
+		alert("enter the values for x and y");
+	}
+	else
+	{	
+		ctx.strokeStyle = "black";
+		ctx.fillStyle = color;
+		ctx.fillRect(200 + (50 * parseInt(bx)) - 15, (400 - 25 * parseInt(by)) , 20, 25 * parseInt(by));
+	}	
+	
+	
+	
+}
+function disp()
+{
+	//setTimeout(function(){document.getElementById('one').style.display = "none";},1000);
+	setTimeout(function(){document.getElementById('xfig').style.display = "block";},100);
+	setTimeout(function(){document.getElementById('txt').style.top = 500;},100);
+}
+
+function nondisp()
+{
+	//setTimeout(function(){document.getElementById('one').style.display = "none";},1000);
+	setTimeout(function(){document.getElementById('xfig').style.display = "none";},1);
+	setTimeout(function(){document.getElementById('txt').style.top = 100;},100);
+	
+}
+function save()
+{
+	var canvas = document.getElementById("canvas");
+	var ctx = canvas.getContext('2d');
+	var url = canvas.toDataURL();
+	document.getElementById("img1").src = url;
+	setTimeout(function(){document.getElementById('a').style.display = "block";},10);
+	setTimeout(function(){document.getElementById('xfig').style.display = "none";},1);
+	setTimeout(function(){document.getElementById('one').style.display = "block";},10);
+	setTimeout(function(){document.getElementById('img1').style.display = "block";},10);
+}
+function remove_image()
+{
+	setTimeout(function(){document.getElementById('a').style.display = "none";},10);
+	setTimeout(function(){document.getElementById('img1').style.display = "none";},10);
+}
+</script>
+ <style>
+ 	body
+ 	{
+ 		font-weight:thin;
+ 		background:#f9f9f9;
+ 	}
+ 	#bx
+ 	{
+ 		width:50;
+ 	}
+ 	#by
+ 	{
+ 		width:50;
+ 	}
+ 	#bx_from
+ 	{
+ 		width:50;
+ 	}
+ 	#bx_to
+ 	{
+ 		width:50;
+ 	}
+ 	#bx_diff
+ 	{
+ 		width:50;
+ 	}
+ 	#by_from
+ 	{
+ 		width:50;
+ 	}
+ 	#by_to
+ 	{
+ 		width:50;
+ 	}
+ 	#by_diff
+ 	{
+ 		width:50;
+ 	}
+ 	
+ 	s2
+ 	{
+ 		font-size:18;
+ 		color:gray;
+ 		font-weight:bold;
+ 	}
+ 	s4
+ 	{
+ 		color:gray;
+ 		font-size:13;
+ 		font-weight:bold;
+ 	}
+ 	a
+ 	{
+ 		color:gray;
+ 		cursor:pointer;
+ 	}
+ 	s5
+ 	{
+ 		color:#393939;
+ 		font-weight:bold;
+ 		font-size:13;
+ 	}
+ 	#save_button,#plot_bar,#ed,#ed1
+ 	{
+ 		background:#393939;
+		width:120;
+		height:23;
+		color:white;
+		font-weight:bold;
+		border:2px solid #393939;	
+ 	}
+ 	#save_button:hover,#plot_bar:hover,#ed:hover,#ed1:hover
+	{	
+		background:#505050;
+		border:2px solid #494949;
+	}
+	select
+	{
+		background:#ffffff;
+		border:1px solid black;
+		color:black;
+	}
+	
+ </style>
+</head>
+ 
+<body onload="init();">
+	 <table width = "70%" align = "center">
+		<tr valign = "top" >
+			<td width = "70%" >
+				<br>
+				<s2 >PIX</s2> 
+			</td>
+			<td align = "right">	
+				
+				<br>[<s4><a  onclick = "disp();" >Draw</a></s4>]&nbsp;[<s4><a  onclick = "nondisp();" >Hide</a></s4>]<br>
+			</td>
+		</tr>
+		<tr>
+		<td colspan = "2">
+			<hr style = "color:#f6f6f6; width:100%; ">
+			<br>
+			<s5>PIX is the web based drawing tool, designed to embed in wikipedia 
+			<br>
+			Designed By - Sachin M. Jadhav & Sagar S. Patil<br><br>
+			Just click on Draw [at top-right corner] to make the canvas visible and <br>
+			click on hide to make invisible it.
+				
+			</s5>    
+		</td>
+		</tr>
+	</table>
+	<center>
+	<div id = "one" style = "display:none;">
+		
+		<br><br>
+		<div id = "a">
+		[<s4><a  onclick = "remove_image();" >Remove Image</a></s4>]
+		</div>
+	<img id = "img1" />
+	</div>
+</center>
+
+
+ 	<div id = "xfig" style = "display:none; height:0;">
+ 	<center>
+ 	
+ 	<input type = "submit" id = "ed"onclick = "editable()" value = "Editable"/>
+ 	<input type = "submit" id = "ed1"onclick = "noneditable()" value = "Non - Editable"/>
+ 	<br><br>
+ 	<hr style = "color:#dfdfdf; width:900; ">
+ 	<table width = "70%">
+ 	<tr valign = "top"><td width = "35%" >
+ 	<input type = "radio" id = "r11" name = "choice" value = "Clear" onclick = "drawLine1(this.id)" />Clear
+	<input type = "radio" id = "r0" name = "choice" value = "Rect" onclick = "drawLine1(this.id)" />Rectangle
+ 	<input type = "radio" id = "r1" name = "choice" value = "Circle" onclick = "drawLine1(this.id)" checked/>Circle<br><br>
+ 	<input type = "radio" id = "r2" name = "choice" value = "Line" onclick = "drawLine1(this.id)"/>Line
+ 	<input type = "radio" id = "r3" name = "choice" value = "Dot" onclick = "drawLine1(this.id)"/>Dot
+ 	<input type = "radio" id = "r5" name = "choice" value = "Delete" onclick = "drawLine1(this.id)"/>Delete<br><br>
+ 	<input type = "radio" id = "r4" name = "choice" value = "Erase" onclick = "drawLine1(this.id)"/>Erase
+ 	<select id = "er">
+ 		<option selected = "selected">1</option><option>3</option>
+ 		<option>5</option><option>7</option><option>9</option><option>11</option>
+ 		<option>13</option><option>15</option><option>17</option><option>19</option>
+ 	</select>
+ 	<input type = "radio" id = "r6" name = "choice" value = "Brush" onclick = "drawLine1(this.id)"/>Brush
+ 	<select id = "br">
+ 		<option selected = "selected">1</option><option>2</option>
+ 		<option>3</option><option>4</option><option>5</option><option>6</option>
+ 		<option>7</option><option>8</option><option>9</option><option>10</option>
+ 	</select>
+ 	</td>
+ 	<td width = "30%" style = "border:1px solid #dfdfdf; border-top-width:0; border-bottom-width:0;">&emsp;</td>
+ 	<td >
+ 	
+ 	<input type = "radio" id = "r8" name = "choice" value = "Text" onclick = "drawLine1(this.id)"/>Text
+ 	&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&nbsp;&nbsp;&nbsp;Size:&nbsp;&nbsp;&nbsp;<select id = "ts">
+ 		<option selected = "selected">5</option><option>10</option>
+ 		<option>15</option><option>20</option><option>25</option><option>30</option>
+ 		
+ 	</select><br><br>
+ 	&nbsp;<input type = "text" placeholder = "Enter text here" name = "tval" id = "txt" style = "width:285;"/>
+ 	<br><br>&nbsp;Fill&emsp;
+ 	<input type = "radio" id = "f1" name = "fill" value = "Yes" onclick = "fil(this.id)"/>Yes
+ 	<input type = "radio" id = "f2" name = "fill" value = "No" onclick = "fil(this.id)" checked/>No
+ 	&emsp;&emsp;&emsp;
+ 	<select id = "sel">
+ 		<option selected = "selected">black</option><option>green</option>
+ 		<option>red</option><option>blue</option>
+ 		<option>orange</option>
+ 	</select></td></tr>
+ 	</table>
+ 	&emsp;<br>
+ 	
+ 	<hr style = "color:#dfdfdf; width:900;"><br>
+ 	<table width = "70%">
+ 	<tr valign ="top">
+ 	<td width = "35%">
+ 	<input type = "radio" id = "r9" name = "choice" value = "Bar" onclick = "drawLine1(this.id)"/>Bar Graph
+ 	&nbsp;<br><br>
+ 	
+ 	&nbsp;x:&emsp;<input type = "text" name = "bar_x" id = "bx" value = ""/>&emsp;y:&emsp;<input type = "text" name = "bar_y" id = "by" value = ""/>
+ 	&nbsp;<br><br>
+ 	&nbsp;<select id = "bar_color">
+ 		<option selected = "selected">Black</option><option>Red</option>
+ 		<option>Gray</option><option>Orange</option><option>Blue</option><option>Green</option>
+ 		<option>Yellow</option><option>Navy</option>
+ 	</select>&emsp;&emsp;&nbsp;
+ 	<input type = "submit" id = "plot_bar" name = "plot_b" value = "Plot" onclick = "plot()" />
+ 	</td>
+	<td width = "30%" style = "border:1px solid #dfdfdf; border-top-width:0; border-bottom-width:0;">
+ 	
+ 	&emsp;X - From <input type = "text" name = "bar_xfrom" id = "bx_from" value = ""/> <br><br>&emsp;To <input type = "text" name = "bar_xto" id = "bx_to" value = ""/><br><br> &emsp;And Difference <input type = "text" name = "bar_xdiff" id = "bx_diff" value = ""/>
+ 	<br><br>
+ 	</td><td>
+ 	&emsp;y - From <input type = "text" name = "bar_yfrom" id = "by_from" value = ""/> <br><br>&emsp;To <input type = "text" name = "bar_yto" id = "by_to" value = ""/> <br><br>&emsp;And Difference <input type = "text" name = "bar_ydiff" id = "by_diff" value = ""/>
+ 	 	
+ 	&emsp;</td></tr>
+ 	</table><br>
+ 	<hr style = "color:#dfdfdf; width:900;"><br>
+ 	<input type = "submit" value = "Save Image" onclick = "save()" id = "save_button"/>
+	<br> 	<br>
+<canvas id="canvas" width="900" height="500" style="border: 1px dotted black; background:white;">
+      This text is displayed if your browser does not support HTML5 Canvas.
+</canvas>
+
+</center>
+
+</div>
+
+
+</body>
+</html>
